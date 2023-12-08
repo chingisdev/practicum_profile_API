@@ -1,0 +1,31 @@
+repos:
+  - repo: local
+    hooks:
+      # Sort imports
+        # https://github.com/timothycrosley/isort
+      - id: isort
+        name: isort
+        description: Library to sort imports.
+        entry: isort
+        args: [
+            "--recursive",
+            "--settings-path", "setup.cfg"
+        ]
+        language: python
+        types: [ python ]
+      - id: flake8
+        name: flake8
+        description: Python style guide enforcement
+        entry: flake8
+        args: [ "--config=setup.cfg" ]
+        language: python
+        types: [ python ]
+        # MyPy Linter
+        # https://mypy.readthedocs.io/en/latest/
+      - id: mypy
+        name: mypy
+        description: Optional static typing for Python 3 and 2 (PEP 484)
+        entry: mypy
+        args: [ "--config-file", "setup.cfg" ]
+        language: python
+        types: [ python ]
