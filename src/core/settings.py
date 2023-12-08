@@ -28,6 +28,8 @@ class Settings(BaseSettings):
 
     kafka_host: str = Field(default='127.0.0.1', examples=['localhost', 'kafka'])
     kafka_port: int = Field(default=KAFKA_PORT_DEV)
+    view_progress_topic: str = Field(default='view_progress')
+    ugc_topic: str = Field(default='ugc')
 
     mongo_host: str = Field(default='127.0.0.1', examples=['localhost', 'mongodb'])
     mongo_port: int = Field(default=MONGO_PORT_DEV)
@@ -65,6 +67,10 @@ class Settings(BaseSettings):
             'linger_ms': 10,
             'acks': 0,
         }
+
+    @property
+    def kafka_topics(self) -> tuple:
+        return self.view_progress_topic, self.ugc_topic
 
 
 settings = Settings()
