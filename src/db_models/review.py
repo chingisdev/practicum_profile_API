@@ -14,6 +14,7 @@ class ReviewDocument(BaseModel):
 
     @classmethod
     def from_mongo(cls: Type['ReviewDocument'], doc: Dict) -> 'ReviewDocument':
+        doc['id'] = str(doc['_id'])
         return cls(**doc)
 
 
@@ -24,8 +25,8 @@ class ReviewModel(MongoBaseModel[ReviewDocument]):
     async def add_review(self, review_document: ReviewDocument) -> None:
         await self.collection.insert_one(review_document.model_dump())
 
-    async def remove_review(self, review_document: ReviewDocument) -> None:
-        await self.collection.delete_one({'_id': review_document.id})  # Assuming there's an 'id' field
+    async def remove_review(self, review_id: str) -> None:
+        await self.collection.delete_one({'_id': review_id})  # Assuming there's an 'id' field
 
     async def get_reviews_by_movie(self, movie_id: str) -> List[ReviewDocument]:
         return await self.find({'movie_id': movie_id})
