@@ -15,7 +15,7 @@ def with_session(method: Callable) -> Callable:
 
 
 def async_session_for_public_methods() -> Callable:
-    """Context manager for API classes"""
+    """Decorator for API classes, related to public methods"""
 
     def decorator(cls: Type[object]) -> Type[object]:
         for attr_name, attr_value in cls.__dict__.items():
