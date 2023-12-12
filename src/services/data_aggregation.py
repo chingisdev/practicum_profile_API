@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
-from src.db_models.like import TargetType
+from src.db_models.like import LikeModel, TargetType
 from src.db_models.mongo_base_model import MongoBaseModel
 
 
@@ -15,10 +15,19 @@ class WatchProgress(BaseModel):
     progress: float = Field(default=0)
 
 
-class UserSummaryAggregation(BaseModel):
+class UserSummary(BaseModel):
     movie_id: str
     likes_count: int
     user_liked: bool
+    watch_progress: WatchProgress
+
+
+class MovieSummary(BaseModel):
+    movie_id: str
+    likes_count: int
+    user_liked: bool
+    bookmarks_count: int
+    user_bookmarked: bool
     watch_progress: WatchProgress
 
 
@@ -27,12 +36,69 @@ class AbstractSummaryAggregator(ABC):
         self.mongo_model = mongo_model
 
     @abstractmethod
-    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummaryAggregation]:
+    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> Any:
         raise NotImplementedError
 
 
+class MovieSummaryAggregator:
+    def __init__(self, like_model: LikeModel):
+        self.like_model = like_model
+
+    async def aggregate(self, user_id: str, movie_id: str) -> MovieSummary:
+
+        pipeline: List[Dict[str, Any]] = [
+            {'$match': {'target_id': movie_id}},
+            {
+                '$lookup': {
+                    'from': 'likes',
+                    'localField': 'target_id',
+                    'foreignField': 'target_id',
+                    'as': 'likes_info',
+                },
+            },
+            {
+                '$lookup': {
+                    'from': 'bookmarks',
+                    'localField': 'target_id',
+                    'foreignField': 'movie_id',
+                    'as': 'bookmarks_info',
+                },
+            },
+            {
+                '$lookup': {
+                    'from': 'watch_progress',
+                    'let': {'movie_id': '$target_id', 'user_id': user_id},
+                    'pipeline': [
+                        {'$match': {
+                            '$expr': {
+                                '$and': [
+                                    {'$eq': ['$movie_id', '$$movie_id']},
+                                    {'$eq': ['$user_id', '$$user_id']},
+                                ],
+                            },
+                        }},
+                        {'$limit': 1},
+                    ],
+                    'as': 'watch_progress',
+                },
+            },
+            {
+                '$project': {
+                    'movie_id': '$target_id',
+                    'likes_count': {'$size': '$likes_info'},
+                    'user_liked': {'$in': [user_id, '$likes_info.user_id']},
+                    'bookmarks_count': {'$size': '$bookmarks_info'},
+                    'user_bookmarked': {'$in': [user_id, '$bookmarks_info.user_id']},
+                    'watch_progress': {'$ifNull': [{'$arrayElemAt': ['$watch_progress.progress', 0]}, 0]},
+                },
+            },
+        ]
+        documents = await self.like_model.collection.aggregate(pipeline).to_list(length=1)
+        return MovieSummary(**documents[0])
+
+
 class BookmarkSummaryAggregator(AbstractSummaryAggregator):
-    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummaryAggregation]:
+    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummary]:
         skip_amount = page_number * page_limit
 
         pipeline: List[Dict[str, Any]] = [
@@ -77,11 +143,11 @@ class BookmarkSummaryAggregator(AbstractSummaryAggregator):
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
-        return [UserSummaryAggregation(**doc) for doc in documents]
+        return [UserSummary(**doc) for doc in documents]
 
 
 class LikesSummaryAggregator(AbstractSummaryAggregator):
-    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummaryAggregation]:
+    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummary]:
         skip_amount = page_number * page_limit
 
         pipeline: List[Dict[str, Any]] = [
@@ -126,11 +192,11 @@ class LikesSummaryAggregator(AbstractSummaryAggregator):
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
-        return [UserSummaryAggregation(**doc) for doc in documents]
+        return [UserSummary(**doc) for doc in documents]
 
 
 class WatchProgressSummaryAggregator(AbstractSummaryAggregator):
-    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummaryAggregation]:
+    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummary]:
         skip_amount = page_number * page_limit
 
         pipeline: List[Dict[str, Any]] = [
@@ -156,4 +222,4 @@ class WatchProgressSummaryAggregator(AbstractSummaryAggregator):
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
-        return [UserSummaryAggregation(**doc) for doc in documents]
+        return [UserSummary(**doc) for doc in documents]
