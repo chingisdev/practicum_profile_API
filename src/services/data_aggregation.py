@@ -37,6 +37,8 @@ class BookmarkSummaryAggregator(AbstractSummaryAggregator):
 
         pipeline: List[Dict[str, Any]] = [
             {'$match': {'user_id': user_id}},
+            {'$skip': skip_amount},
+            {'$limit': page_limit},
             {
                 '$lookup': {
                     'from': 'likes',
@@ -72,8 +74,6 @@ class BookmarkSummaryAggregator(AbstractSummaryAggregator):
                     'watch_progress': {'$ifNull': [{'$arrayElemAt': ['$watch_progress.progress', 0]}, 0]},
                 },
             },
-            {'$skip': skip_amount},
-            {'$limit': page_limit},
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
@@ -86,6 +86,8 @@ class LikesSummaryAggregator(AbstractSummaryAggregator):
 
         pipeline: List[Dict[str, Any]] = [
             {'$match': {'user_id': user_id, 'target_type': TargetType.movie.value}},
+            {'$skip': skip_amount},
+            {'$limit': page_limit},
             {
                 '$lookup': {
                     'from': 'likes',
@@ -121,8 +123,6 @@ class LikesSummaryAggregator(AbstractSummaryAggregator):
                     'watch_progress': {'$ifNull': [{'$arrayElemAt': ['$watch_progress.progress', 0]}, 0]},
                 },
             },
-            {'$skip': skip_amount},
-            {'$limit': page_limit},
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
@@ -135,6 +135,8 @@ class WatchProgressSummaryAggregator(AbstractSummaryAggregator):
 
         pipeline: List[Dict[str, Any]] = [
             {'$match': {'user_id': user_id}},
+            {'$skip': skip_amount},
+            {'$limit': page_limit},
             {
                 '$lookup': {
                     'from': 'likes',
@@ -151,8 +153,6 @@ class WatchProgressSummaryAggregator(AbstractSummaryAggregator):
                     'watch_progress': '$progress',
                 },
             },
-            {'$skip': skip_amount},
-            {'$limit': page_limit},
         ]
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
