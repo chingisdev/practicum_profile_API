@@ -1,7 +1,10 @@
 from fastapi import Request
 
 from core.settings import settings
-from models import User
+from models.user import User
+from services.external_api.auth import AuthApi
+
+auth_api: AuthApi | None
 
 
 def get_user_from_request_state(request: Request) -> User:
