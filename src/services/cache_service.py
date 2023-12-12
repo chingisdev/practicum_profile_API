@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional, Protocol
 
 from redis.asyncio import Redis
 
+from utils.backoff import backoff_public_methods
+
 
 class SerializerProtocol(Protocol):
     def dumps(self, to_convert: Any) -> Any:
@@ -11,6 +13,7 @@ class SerializerProtocol(Protocol):
         raise NotImplementedError
 
 
+@backoff_public_methods()
 class CacheService:
     def __init__(self, redis_client: Redis, serializer: SerializerProtocol, ttl: int = 300):
         self.redis_client = redis_client
