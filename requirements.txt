@@ -14,3 +14,4 @@ aiokafka==0.9.0
 kafka-python==2.0.2
 redis==5.0.1
 tenacity==8.2.3
+aiohttp==3.9.1
