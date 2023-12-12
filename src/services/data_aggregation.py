@@ -127,3 +127,33 @@ class LikesSummaryAggregator(AbstractSummaryAggregator):
 
         documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
         return [UserSummaryAggregation(**doc) for doc in documents]
+
+
+class WatchProgressSummaryAggregator(AbstractSummaryAggregator):
+    async def aggregate(self, user_id: str, page_number: int = 0, page_limit: int = 0) -> List[UserSummaryAggregation]:
+        skip_amount = page_number * page_limit
+
+        pipeline: List[Dict[str, Any]] = [
+            {'$match': {'user_id': user_id}},
+            {
+                '$lookup': {
+                    'from': 'likes',
+                    'localField': 'movie_id',
+                    'foreignField': 'target_id',
+                    'as': 'likes_info',
+                },
+            },
+            {
+                '$project': {
+                    'movie_id': '$target_id',
+                    'likes_count': {'$size': '$likes_info'},
+                    'user_liked': {'$in': [user_id, '$likes_info.user_id']},
+                    'watch_progress': '$progress',
+                },
+            },
+            {'$skip': skip_amount},
+            {'$limit': page_limit},
+        ]
+
+        documents = await self.mongo_model.collection.aggregate(pipeline).to_list(length=None)
+        return [UserSummaryAggregation(**doc) for doc in documents]
