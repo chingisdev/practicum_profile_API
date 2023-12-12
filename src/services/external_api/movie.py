@@ -3,16 +3,16 @@ from typing import Dict, List, Optional
 
 from aiohttp.client import ClientSession
 
-from utils.async_session import async_session_for_public_methods
+from utils.async_session import with_aiohttp_session
 from utils.backoff import backoff_public_methods
 
 
 @backoff_public_methods()
-@async_session_for_public_methods()
 class MovieApi:
     def __init__(self, base_url: str):
         self.base_url = base_url
 
+    @with_aiohttp_session
     async def get_several(self, session: ClientSession, movie_ids: List[str]) -> List[Optional[Dict]]:
         """Fetch details for multiple movies by their IDs."""
 
