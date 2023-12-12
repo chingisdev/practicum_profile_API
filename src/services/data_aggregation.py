@@ -16,7 +16,7 @@ class WatchProgress(BaseModel):
 
 class UserSummaryAggregation(BaseModel):
     movie_id: str
-    likes: List[Like]
+    likes_count: int
     user_liked: bool
     watch_progress: WatchProgress
 
@@ -40,8 +40,8 @@ class BookmarkSummaryAggregator(AbstractSummaryAggregator):
                 '$lookup': {
                     'from': 'likes',
                     'localField': 'movie_id',
-                    'foreignField': 'movie_id',
-                    'as': 'likes',
+                    'foreignField': 'target_id',
+                    'as': 'likes_info',
                 },
             },
             {
@@ -66,8 +66,8 @@ class BookmarkSummaryAggregator(AbstractSummaryAggregator):
             {
                 '$project': {
                     'movie_id': 1,
-                    'likes': 1,
-                    'user_liked': {'$in': [user_id, '$likes.user_id']},
+                    'likes_count': {'$size': '$likes_info'},
+                    'user_liked': {'$in': [user_id, '$likes_info.user_id']},
                     'watch_progress': {'$ifNull': [{'$arrayElemAt': ['$watch_progress.progress', 0]}, 0]},
                 },
             },
