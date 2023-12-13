@@ -6,8 +6,8 @@ from aiohttp.client import ClientSession
 from fastapi import HTTPException
 
 from src.models.user import User
-from src.utils.async_session import with_aiohttp_session
-from src.utils.backoff import backoff_public_methods
+from src.project_utilities.async_session import with_aiohttp_session
+from src.project_utilities.backoff import backoff_public_methods
 
 
 @backoff_public_methods()

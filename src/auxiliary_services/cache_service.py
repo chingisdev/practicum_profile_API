@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 import orjson
 from redis.asyncio import Redis
 
-from src.utils.backoff import backoff_public_methods
+from src.project_utilities.backoff import backoff_public_methods
 
 
 @backoff_public_methods()
