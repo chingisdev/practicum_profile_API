@@ -34,3 +34,11 @@ def get_watch_progress_service(
         summary_aggregator=summary_aggregator,
         movie_api=movie_api,
     )
+
+
+@lru_cache()
+def get_watch_progress_model(
+    client: AsyncMongoClient = Depends(get_mongo_client),
+) -> WatchProgressModel:
+    db = client[settings.mongo_database]
+    return WatchProgressModel(db)
