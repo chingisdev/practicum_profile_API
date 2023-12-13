@@ -5,6 +5,7 @@ from motor.core import AgnosticDatabase
 from pydantic import BaseModel, EmailStr, Field
 
 from src.db_models.mongo_base_model import MongoBaseModel
+from models.user import UserUpdate
 
 
 class UserDocument(BaseModel):
@@ -27,8 +28,12 @@ class UserModel(MongoBaseModel[UserDocument]):
         user_dict = user_document.model_dump(by_alias=True, exclude={'id'}, exclude_none=True)
         await self.collection.insert_one(user_dict)
 
-    async def update_user(self, user_id: str, update_data: dict) -> None:
-        await self.collection.update_one({'_id': ObjectId(user_id)}, {'$set': update_data})
+    async def update_user(self, user_id: str, update_data: UserUpdate) -> None:
+        await self.collection.update_one(
+            {'_id': ObjectId(user_id)},
+            {'$set': update_data.model_dump(exclude_unset=True)},
+            upsert=True,
+        )
 
     async def get_user(self, user_id: str) -> Optional[UserDocument]:
         return await self.find_one({'_id': ObjectId(user_id)})
