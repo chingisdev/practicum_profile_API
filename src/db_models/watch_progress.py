@@ -20,9 +20,9 @@ class WatchProgressModel(MongoBaseModel[WatchProgressDocument]):
     def __init__(self, database: AgnosticDatabase):
         super().__init__(database, 'watch_progress', WatchProgressDocument.from_mongo)
 
-    async def update_progress(self, watch_progress_document: WatchProgressDocument) -> None:
-        query = {'user_id': watch_progress_document.user_id, 'movie_id': watch_progress_document.movie_id}
-        update_data = {'$set': {'progress': watch_progress_document.progress}}
+    async def update_progress(self, user_id: str, movie_id: str, break_point: float) -> None:
+        query = {'user_id': user_id, 'movie_id': movie_id}
+        update_data = {'$set': {'progress': break_point}}
         await self.collection.update_one(query, update_data, upsert=True)
 
     async def get_progress(self, user_id: str, movie_id: str) -> Optional[WatchProgressDocument]:
