@@ -1,14 +1,10 @@
-from typing import Annotated, List, Optional
-
 from aiokafka import AIOKafkaProducer  # type: ignore
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
 from core.settings import settings
-from endpoint_services.bookmark import get_bookmark_model, get_bookmark_service
-from models.movie import MovieSummaryResponse
+from endpoint_services.bookmark import get_bookmark_model
 from models.user import User
-from src.auxiliary_services.movie_search import MovieSearch
 from src.db_models.bookmark import BookmarkModel
 from src.dependencies.auth import get_user_from_request_state
 from src.dependencies.kafka import get_kafka_producer
@@ -66,16 +62,3 @@ async def remove_bookmark(
         status_code=status.HTTP_200_OK,
         content={'detail': 'DELETED'},
     )
-
-
-@router.get(
-    '/',
-    summary="Get user's bookmarks",
-)
-async def get_bookmarks(
-    page_size: Annotated[int, Query(description='Items on page', ge=1)] = 50,
-    page_number: Annotated[int, Query(description='Page number', ge=0)] = 0,
-    user: User = Depends(get_user_from_request_state),
-    search: MovieSearch = Depends(get_bookmark_service),
-) -> Optional[List[MovieSummaryResponse]]:
-    return await search.get_user_movies(user_id=user.id, page_number=page_number, page_limit=page_size)
