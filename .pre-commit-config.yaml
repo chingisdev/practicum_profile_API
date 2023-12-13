@@ -8,16 +8,8 @@ repos:
         description: Library to sort imports.
         entry: isort
         args: [
-            "--recursive",
             "--settings-path", "setup.cfg"
         ]
-        language: python
-        types: [ python ]
-      - id: flake8
-        name: flake8
-        description: Python style guide enforcement
-        entry: flake8
-        args: [ "--config=setup.cfg" ]
         language: python
         types: [ python ]
         # MyPy Linter
@@ -27,5 +19,12 @@ repos:
         description: Optional static typing for Python 3 and 2 (PEP 484)
         entry: mypy
         args: [ "--config-file", "setup.cfg" ]
+        language: python
+        types: [ python ]
+      - id: flake8
+        name: flake8
+        description: Python style guide enforcement
+        entry: flake8
+        args: [ "--config=setup.cfg" ]
         language: python
         types: [ python ]
