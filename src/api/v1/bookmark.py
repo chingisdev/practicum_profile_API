@@ -26,7 +26,7 @@ async def add_bookmark(
 
     message_to_kafka = {
         'user_id': user.id,
-        'movie_id': movie_id,
+        'target_id': movie_id,
         'is_adding': True,
     }
 
@@ -52,7 +52,7 @@ async def remove_bookmark(
 
     message_to_kafka = {
         'user_id': user.id,
-        'movie_id': movie_id,
+        'target_id': movie_id,
         'is_adding': False,
     }
 
