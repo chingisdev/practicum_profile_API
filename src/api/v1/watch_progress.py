@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/watch-progress",
+    "/",
     summary="User's watching progress",
     description="Accepts checkpoints of user's watching progress.",
 )
