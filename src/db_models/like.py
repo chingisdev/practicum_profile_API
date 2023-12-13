@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Dict, Type
 
+from motor.core import AgnosticDatabase
 from pydantic import BaseModel
 
-from dependencies.mongo import AsyncMongoClient
 from src.db_models.mongo_base_model import MongoBaseModel
 
 
@@ -23,8 +23,8 @@ class LikeDocument(BaseModel):
 
 
 class LikeModel(MongoBaseModel[LikeDocument]):
-    def __init__(self, db_client: AsyncMongoClient):
-        super().__init__(db_client, 'likes', LikeDocument.from_mongo)
+    def __init__(self, database: AgnosticDatabase):
+        super().__init__(database, 'likes', LikeDocument.from_mongo)
 
     async def add_like(self, like_document: LikeDocument) -> None:
         await self.collection.insert_one(like_document.model_dump())

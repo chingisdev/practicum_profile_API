@@ -1,17 +1,19 @@
-from typing import Callable, Dict, Generic, List, TypeVar
+from typing import Any, Callable, Generic, List, Optional, TypeVar
 
-from dependencies.mongo import AsyncMongoClient
+from motor.core import AgnosticDatabase
 
 PydanticEntity = TypeVar('PydanticEntity')
 
 
 class MongoBaseModel(Generic[PydanticEntity]):
-    def __init__(self, db_client: AsyncMongoClient, collection_name: str, factory: Callable[[Dict], PydanticEntity]):
-        self.collection = db_client[collection_name]
+    def __init__(self, database: AgnosticDatabase, collection_name: str, factory: Callable[[Any], PydanticEntity]):
+        self.collection = database[collection_name]
         self.factory = factory
 
-    async def find_one(self, query: dict) -> PydanticEntity:
+    async def find_one(self, query: dict) -> Optional[PydanticEntity]:
         document = await self.collection.find_one(query)
+        if document is None:
+            return None
         return self.factory(document)
 
     async def find(self, query: dict, skip: int = 0, limit: int = 0) -> List[PydanticEntity]:

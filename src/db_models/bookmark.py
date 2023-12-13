@@ -1,8 +1,8 @@
 from typing import Dict, List, Type
 
+from motor.core import AgnosticDatabase
 from pydantic import BaseModel
 
-from dependencies.mongo import AsyncMongoClient
 from src.db_models.mongo_base_model import MongoBaseModel
 
 
@@ -16,8 +16,8 @@ class BookmarkDocument(BaseModel):
 
 
 class BookmarkModel(MongoBaseModel[BookmarkDocument]):
-    def __init__(self, db_client: AsyncMongoClient):
-        super().__init__(db_client, 'bookmarks', BookmarkDocument.from_mongo)
+    def __init__(self, database: AgnosticDatabase):
+        super().__init__(database, 'bookmarks', BookmarkDocument.from_mongo)
 
     async def add_bookmark(self, bookmark_document: BookmarkDocument) -> None:
         await self.collection.insert_one(bookmark_document.model_dump())

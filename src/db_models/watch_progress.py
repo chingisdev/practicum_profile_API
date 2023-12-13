@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, Type
 
+from motor.core import AgnosticDatabase
 from pydantic import BaseModel
 
-from dependencies.mongo import AsyncMongoClient
 from src.db_models.mongo_base_model import MongoBaseModel
 
 
@@ -17,8 +17,8 @@ class WatchProgressDocument(BaseModel):
 
 
 class WatchProgressModel(MongoBaseModel[WatchProgressDocument]):
-    def __init__(self, db_client: AsyncMongoClient):
-        super().__init__(db_client, 'watch_progress', WatchProgressDocument.from_mongo)
+    def __init__(self, database: AgnosticDatabase):
+        super().__init__(database, 'watch_progress', WatchProgressDocument.from_mongo)
 
     async def update_progress(self, watch_progress_document: WatchProgressDocument) -> None:
         query = {'user_id': watch_progress_document.user_id, 'movie_id': watch_progress_document.movie_id}

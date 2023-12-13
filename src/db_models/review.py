@@ -1,8 +1,8 @@
 from typing import Dict, List, Type
 
+from motor.core import AgnosticDatabase
 from pydantic import BaseModel
 
-from dependencies.mongo import AsyncMongoClient
 from src.db_models.mongo_base_model import MongoBaseModel
 
 
@@ -19,8 +19,8 @@ class ReviewDocument(BaseModel):
 
 
 class ReviewModel(MongoBaseModel[ReviewDocument]):
-    def __init__(self, db_client: AsyncMongoClient):
-        super().__init__(db_client, 'reviews', ReviewDocument.from_mongo)
+    def __init__(self, database: AgnosticDatabase):
+        super().__init__(database, 'reviews', ReviewDocument.from_mongo)
 
     async def add_review(self, review_document: ReviewDocument) -> None:
         await self.collection.insert_one(review_document.model_dump())
