@@ -17,6 +17,7 @@ env_path = (
 KAFKA_PORT_DEV = 9093
 MONGO_PORT_DEV = 27017
 AUTH_PORT_DEV = 8000
+REDIS_PORT_DEV = 6379
 
 
 class Settings(BaseSettings):
@@ -25,6 +26,9 @@ class Settings(BaseSettings):
     project_name: str = Field(default='user_profile')
 
     api_path: str = Field(default='/api/v1')
+
+    redis_host: str = Field(default='127.0.0.1')
+    redis_port: int = Field(default=REDIS_PORT_DEV)
 
     kafka_host: str = Field(default='127.0.0.1', examples=['localhost', 'kafka'])
     kafka_port: int = Field(default=KAFKA_PORT_DEV)
@@ -43,6 +47,8 @@ class Settings(BaseSettings):
     auth_user_endpoint: str = Field(default='/api/v1/users/me')
     auth_enabled: bool = Field(default=False)
     production_mode: bool = Field(default=False)
+
+    movie_endpoint: str = Field(default='/api/v1/films')
 
     @property
     def auth_service_url(self) -> str:
