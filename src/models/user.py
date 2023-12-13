@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from typing import Optional
 
 class User(BaseModel):
     id: str
@@ -8,3 +8,9 @@ class User(BaseModel):
     email: str
     phone: str = Field(default='')
     is_admin: bool
+
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone: Optional[str]
