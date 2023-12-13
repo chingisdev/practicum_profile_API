@@ -22,11 +22,10 @@ def get_like_service(
 ) -> MovieSearch:
     db = client[settings.mongo_database]
     like_model = LikeModel(db)
-    bookmark_model = LikeModel(db)
     cache_expire_time = 60 * 60 * 24 * 7
     cache_service = CacheService(redis_client=redis, ttl=cache_expire_time)
     detailed_aggregator = MovieDetailedAggregator(like_model=like_model)
-    summary_aggregator = BookmarkSummaryAggregator(mongo_model=bookmark_model)
+    summary_aggregator = BookmarkSummaryAggregator(mongo_model=like_model)
     return MovieSearch(
         cache=cache_service,
         detailed_aggregator=detailed_aggregator,
