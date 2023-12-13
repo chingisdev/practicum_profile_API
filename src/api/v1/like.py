@@ -2,12 +2,12 @@ from aiokafka import AIOKafkaProducer  # type: ignore
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from core.settings import settings
-from models.user import User
+from src.core.settings import settings
 from src.db_models.like import LikeDocument, LikeModel, TargetType
 from src.dependencies.auth import get_user_from_request_state
 from src.dependencies.kafka import get_kafka_producer
 from src.endpoint_services.like import get_like_model
+from src.models.user import User
 
 router = APIRouter()
 
@@ -171,4 +171,3 @@ async def get_review_likes(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={'detail': 'Internal server error'},
         )
-

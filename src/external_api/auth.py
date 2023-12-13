@@ -5,9 +5,9 @@ from typing import Dict, Optional
 from aiohttp.client import ClientSession
 from fastapi import HTTPException
 
-from models.user import User
-from utils.async_session import with_aiohttp_session
-from utils.backoff import backoff_public_methods
+from src.models.user import User
+from src.utils.async_session import with_aiohttp_session
+from src.utils.backoff import backoff_public_methods
 
 
 @backoff_public_methods()

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from models.movie import MovieDetailedAggregation, MovieSummaryAggregation
 from src.db_models.like import LikeModel, TargetType
 from src.db_models.mongo_base_model import MongoBaseModel
+from src.models.movie import MovieDetailedAggregation, MovieSummaryAggregation
 
 
 class AbstractSummaryAggregator(ABC):

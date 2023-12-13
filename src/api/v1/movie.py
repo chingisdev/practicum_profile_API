@@ -2,13 +2,13 @@ from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from models.movie import MovieDetailedResponse, MovieSummaryResponse
-from models.user import User
 from src.auxiliary_services.movie_search import MovieSearch
 from src.dependencies.auth import get_user_from_request_state
 from src.endpoint_services.bookmark import get_bookmark_service
 from src.endpoint_services.like import get_like_service
 from src.endpoint_services.watch_progress import get_watch_progress_service
+from src.models.movie import MovieDetailedResponse, MovieSummaryResponse
+from src.models.user import User
 
 router = APIRouter()
 

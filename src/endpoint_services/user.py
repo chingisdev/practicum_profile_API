@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from fastapi import Depends
 
-from core.settings import settings
+from src.core.settings import settings
 from src.db_models.user import UserModel
 from src.dependencies.mongo import AsyncMongoClient, get_mongo_client
 

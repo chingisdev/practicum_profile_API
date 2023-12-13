@@ -3,9 +3,9 @@ from typing import List, Optional
 
 from aiohttp.client import ClientSession
 
-from models.movie import MovieApiResponse, MovieGenre, MoviePerson, MoviePersonName
-from utils.async_session import with_aiohttp_session
-from utils.backoff import backoff_public_methods
+from src.models.movie import MovieApiResponse, MovieGenre, MoviePerson, MoviePersonName
+from src.utils.async_session import with_aiohttp_session
+from src.utils.backoff import backoff_public_methods
 
 
 def deserialize_movie_json(film: dict) -> 'MovieApiResponse':

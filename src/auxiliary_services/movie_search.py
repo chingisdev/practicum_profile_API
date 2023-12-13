@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
-from models.movie import MovieApiResponse, MovieDetailedResponse, MovieSummaryAggregation, MovieSummaryResponse
 from src.auxiliary_services.cache_service import CacheService
 from src.auxiliary_services.data_aggregation import AbstractSummaryAggregator, MovieDetailedAggregator
 from src.external_api.movie import MovieApi, deserialize_movie_json
+from src.models.movie import MovieApiResponse, MovieDetailedResponse, MovieSummaryAggregation, MovieSummaryResponse
 
 
 def get_empty(pairs: dict) -> List[str]:

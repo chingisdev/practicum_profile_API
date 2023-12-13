@@ -5,7 +5,7 @@ from motor.core import AgnosticDatabase
 from pydantic import BaseModel, EmailStr, Field
 
 from src.db_models.mongo_base_model import MongoBaseModel
-from models.user import UserUpdate
+from src.models.user import UserUpdate
 
 
 class UserDocument(BaseModel):

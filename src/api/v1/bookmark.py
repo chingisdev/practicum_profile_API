@@ -2,12 +2,12 @@ from aiokafka import AIOKafkaProducer  # type: ignore
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from core.settings import settings
-from models.user import User
+from src.core.settings import settings
 from src.db_models.bookmark import BookmarkModel
 from src.dependencies.auth import get_user_from_request_state
 from src.dependencies.kafka import get_kafka_producer
 from src.endpoint_services.bookmark import get_bookmark_model
+from src.models.user import User
 
 router = APIRouter()
 

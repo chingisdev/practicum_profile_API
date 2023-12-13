@@ -3,10 +3,10 @@ from functools import lru_cache
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from core.settings import settings
 from src.auxiliary_services.cache_service import CacheService
 from src.auxiliary_services.data_aggregation import MovieDetailedAggregator, WatchProgressSummaryAggregator
 from src.auxiliary_services.movie_search import MovieSearch
+from src.core.settings import settings
 from src.db_models.like import LikeModel
 from src.db_models.watch_progress import WatchProgressModel
 from src.dependencies.mongo import AsyncMongoClient, get_mongo_client

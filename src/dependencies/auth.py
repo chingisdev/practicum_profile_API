@@ -1,8 +1,8 @@
 from fastapi import Request
 
-from core.settings import settings
-from models.user import User
+from src.core.settings import settings
 from src.external_api.auth import AuthApi
+from src.models.user import User
 
 auth_api: AuthApi | None
 
