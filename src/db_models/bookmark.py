@@ -19,8 +19,8 @@ class BookmarkModel(MongoBaseModel[BookmarkDocument]):
     def __init__(self, database: AgnosticDatabase):
         super().__init__(database, 'bookmarks', BookmarkDocument.from_mongo)
 
-    async def add_bookmark(self, bookmark_document: BookmarkDocument) -> None:
-        await self.collection.insert_one(bookmark_document.model_dump())
+    async def add_bookmark(self, user_id: str, movie_id: str) -> None:
+        await self.collection.insert_one({'user_id': user_id, 'movie_id': movie_id})
 
     async def remove_bookmark(self, user_id: str, movie_id: str) -> None:
         await self.collection.delete_one({'user_id': user_id, 'movie_id': movie_id})

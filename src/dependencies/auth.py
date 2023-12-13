@@ -2,7 +2,7 @@ from fastapi import Request
 
 from core.settings import settings
 from models.user import User
-from services.external_api.auth import AuthApi
+from src.external_api.auth import AuthApi
 
 auth_api: AuthApi | None
 

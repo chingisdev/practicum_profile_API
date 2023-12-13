@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     mongo_host: str = Field(default='127.0.0.1', examples=['localhost', 'mongodb'])
     mongo_port: int = Field(default=MONGO_PORT_DEV)
-    mongo_database: str = Field(default='moviesUGC')
+    mongo_database: str = Field(default='profile')
 
     token_bucket_capacity: int = Field(default=10)
     token_bucket_rate: int = Field(default=1)

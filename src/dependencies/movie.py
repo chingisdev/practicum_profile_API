@@ -1,6 +1,6 @@
 from typing import Optional
 
-from services.external_api.movie import MovieApi
+from src.external_api.movie import MovieApi
 
 movie_api: Optional[MovieApi] = None
 
