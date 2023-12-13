@@ -5,10 +5,10 @@ from redis.asyncio import Redis
 
 from core.settings import settings
 from src.auxiliary_services.cache_service import CacheService
-from src.auxiliary_services.data_aggregation import WatchProgressSummaryAggregator, MovieDetailedAggregator
+from src.auxiliary_services.data_aggregation import MovieDetailedAggregator, WatchProgressSummaryAggregator
 from src.auxiliary_services.movie_search import MovieSearch
-from src.db_models.watch_progress import WatchProgressModel
 from src.db_models.like import LikeModel
+from src.db_models.watch_progress import WatchProgressModel
 from src.dependencies.mongo import AsyncMongoClient, get_mongo_client
 from src.dependencies.movie import get_movie_api
 from src.dependencies.redis import get_redis
@@ -20,7 +20,7 @@ def get_watch_progress_service(
     client: AsyncMongoClient = Depends(get_mongo_client),
     redis: Redis = Depends(get_redis),
     movie_api: MovieApi = Depends(get_movie_api),
-):
+) -> MovieSearch:
     db = client[settings.mongo_database]
     like_model = LikeModel(db)
     watch_progress_model = WatchProgressModel(db)
