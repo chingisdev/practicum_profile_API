@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     auth_enabled: bool = Field(default=False)
     production_mode: bool = Field(default=False)
 
-    movie_endpoint: str = Field(default='/api/v1/films')
+    movie_endpoint: str = Field(default='http://localhost:8000/api/v1/films')
 
     @property
     def auth_service_url(self) -> str:
