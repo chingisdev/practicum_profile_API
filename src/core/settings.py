@@ -14,7 +14,7 @@ env_path = (
 )
 
 
-KAFKA_PORT_DEV = 9093
+KAFKA_PORT_DEV = 9092
 MONGO_PORT_DEV = 27017
 AUTH_PORT_DEV = 8000
 REDIS_PORT_DEV = 6379
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     redis_host: str = Field(default='127.0.0.1')
     redis_port: int = Field(default=REDIS_PORT_DEV)
 
-    kafka_host: str = Field(default='127.0.0.1', examples=['localhost', 'kafka'])
+    kafka_host: str = Field(default='kafka', examples=['localhost', 'kafka'])
     kafka_port: int = Field(default=KAFKA_PORT_DEV)
     watch_progress_topic: str = Field(default='view_progress')
     ugc_topic: str = Field(default='ugc')

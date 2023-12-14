@@ -1,8 +1,10 @@
 version: "3.7"
+name: diploma
 
 services:
   profile_api:
-    build: src
+    container_name: profile_api
+    build: .
     restart: unless-stopped
     depends_on:
       - redis
@@ -12,7 +14,7 @@ services:
     expose:
       - "8000"
     ports:
-      - "8000:8000"
+      - "8080:8080"
     env_file:
       - .env.example
 
@@ -33,6 +35,7 @@ services:
       - mongodb_data:/data/db
 
   auth_api:
+    container_name: auth_api
     image: allyotov/movies_auth:1.1.0
     env_file:
       - .auth.env.example
@@ -60,7 +63,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka_ugc
+    container_name: kafka_profile
     depends_on:
       - zookeeper
     expose:
@@ -71,7 +74,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT_LOCAL://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_LOCAL://127.0.0.1:9093,PLAINTEXT_DOCKER://kafka_ugc:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_LOCAL://127.0.0.1:9093,PLAINTEXT_DOCKER://kafka_profile:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_LOCAL:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
