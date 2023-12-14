@@ -51,7 +51,7 @@ class MovieApi:
 
     @with_aiohttp_session
     async def get_single(self, session: ClientSession, movie_id: str) -> Optional[MovieApiResponse]:
-        url = '{url}/movies?id={id}'.format(url=self.base_url, id=movie_id)
+        url = '{url}/{id}'.format(url=self.base_url, id=movie_id)
         async with session.get(url) as response:
             if response.status == HTTPStatus.OK:
                 movie = await response.json()
@@ -61,9 +61,9 @@ class MovieApi:
     @with_aiohttp_session
     async def get_several(self, session: ClientSession, movie_ids: List[str]) -> List[Optional[MovieApiResponse]]:
         """Fetch details for multiple movies by their IDs."""
-
-        ids_param = ', '.join(movie_ids)
-        url = '{url}/movies?ids={ids}'.format(url=self.base_url, ids=ids_param)
+        param_tokens = ['id={id}'.format(id=movie_id) for movie_id in movie_ids]
+        ids_param = '&'.join(param_tokens)
+        url = '{url}/?{ids}'.format(url=self.base_url, ids=ids_param)
         async with session.get(url) as response:
             if response.status == HTTPStatus.OK:
                 movies = await response.json()
