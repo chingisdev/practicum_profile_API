@@ -1,0 +1,146 @@
+version: "3.7"
+name: diploma
+
+services:
+  profile_api:
+    container_name: profile_api
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - mongodb
+      - auth_api
+      - kafka
+    expose:
+      - "8000"
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.example
+
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_single
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  auth_api:
+    container_name: auth_api
+    image: allyotov/movies_auth:1.1.0
+    env_file:
+      - .auth.env.example
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - "auth-app-logs:/backend/logs/"
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .auth.env.example
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # KAFKA Services
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka_profile
+    depends_on:
+      - zookeeper
+    expose:
+      - "9092"
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT_LOCAL://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_LOCAL://127.0.0.1:9093,PLAINTEXT_DOCKER://kafka_profile:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_LOCAL:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_MESSAGE_MAX_BYTES: 2000000  # Set max message size to 2MB
+      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka_ugc:9092
+    depends_on:
+      - kafka
+
+  # E.L.K. services:
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.10.4
+    volumes:
+      - "filebeatdata:/usr/share/filebeat/data"
+      - "./elk_deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - "nginx-logs:/var/log/nginx/:ro"
+      - "auth-app-logs:/auth_logs/:ro"
+      - "ugc-app-logs:/ugc_logs/:ro"
+    environment:
+      - LOGSTASH_HOSTS=logstash:5045
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.4
+    ports:
+      - "5044:5044/udp"
+    volumes:
+      - "logstashdata:/usr/share/logstash/data"
+      - "./elk_deploy/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+    environment:
+      - xpack.monitoring.enabled=false
+      - ELASTIC_HOSTS=http://elasticsearch:9200
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.4
+    volumes:
+      - "esdata:/usr/share/elasticsearch/data"
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.4
+    volumes:
+      - "kibanadata:/usr/share/kibana/data"
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+volumes:
+  pg_data:
+  mongodb_data:
+  redis_data:
+  esdata:
+  kibanadata:
+  logstashdata:
+  filebeatdata:
+  nginx-logs:
+  auth-app-logs:
+  ugc-app-logs:
