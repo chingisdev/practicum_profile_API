@@ -1,0 +1,46 @@
+filebeat.inputs:
+  - type: filestream
+    id: nginx_access_filestream
+    paths:
+      - /var/log/nginx/access.log
+    fields:
+      source: nginx_access_logs
+
+  - type: filestream
+    id: nginx_error_filestream
+    paths:
+      - /var/log/nginx/error.log
+    fields:
+      source: nginx_error_logs
+
+  - type: filestream
+    id: ugc_access_filestream
+    paths:
+      - /ugc_logs/access.log
+    fields:
+      source: ugc_access_logs
+
+  - type: filestream
+    id: ugc_errors_filestream
+    paths:
+      - /ugc_logs/errors.log
+    fields:
+      source: ugc_error_logs
+
+  - type: filestream
+    id: auth_access_filestream
+    paths:
+      - /auth_logs/access.log
+    fields:
+      source: auth_access_logs
+
+  - type: filestream
+    id: auth_errors_filestream
+    paths:
+      - /auth_logs/errors.log
+    fields:
+      source: auth_error_logs
+
+output.logstash:
+  enabled: true
+  hosts: ${LOGSTASH_HOSTS}
