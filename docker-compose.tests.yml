@@ -12,14 +12,14 @@ services:
 
   mongodb:
     image: mongo:latest
-    container_name: mongo_single
+    container_name: mongo_single_test
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data_test:/data/db
 
   auth_api:
-    container_name: auth_api
+    container_name: auth_api_test
     image: allyotov/movies_auth:1.1.0
     env_file:
       - .ugc.env.development
@@ -31,7 +31,7 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: postgres_test
     env_file:
       - .ugc.env.development
     volumes:
@@ -45,7 +45,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka_profile
+    container_name: kafka_profile_test
     depends_on:
       - zookeeper
     expose:
