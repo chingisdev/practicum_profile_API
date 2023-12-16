@@ -6,7 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.schema import CreateSchema, DropSchema
 
-from src.models.base import Base
+from tests.functional.models.base import Base
 from tests.functional.settings import test_settings
 
 event.listen(Base.metadata, 'before_create', CreateSchema('content'))
