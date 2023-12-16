@@ -1,0 +1,80 @@
+version: "3.7"
+name: profile_api_tests
+
+services:
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_single
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_test:/data/db
+
+  auth_api:
+    container_name: auth_api
+    image: allyotov/movies_auth:1.1.0
+    env_file:
+      - .ugc.env.development
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .ugc.env.development
+    volumes:
+      - pg_data_test:/var/lib/postgresql/data
+
+  # KAFKA Services
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka_profile
+    depends_on:
+      - zookeeper
+    expose:
+      - "9092"
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT_LOCAL://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_LOCAL://127.0.0.1:9093,PLAINTEXT_DOCKER://kafka_profile:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_LOCAL:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_MESSAGE_MAX_BYTES: 2000000  # Set max message size to 2MB
+      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka_ugc:9092
+    depends_on:
+      - kafka
+
+volumes:
+  pg_data_test:
+  mongodb_data_test:
+  redis_data_test:
+  esdata_test:
