@@ -17,7 +17,7 @@ RUN apt update \
 
 RUN apt-get update && apt-get install -y netcat-openbsd
 
-COPY src /bachend/src
+COPY src /backend/src
 
 EXPOSE 8080
 RUN sed -i 's/\r$//' /backend/docker-entrypoint.sh
