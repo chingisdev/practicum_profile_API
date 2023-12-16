@@ -34,6 +34,7 @@ ipython = "^8.18.1"
 [tool.poetry.group.tests.dependencies]
 sqlalchemy = "^2.0.23"
 pytest-aiohttp = "^1.0.5"
+pytest-asyncio = "^0.23.2"
 
 [build-system]
 requires = ["poetry-core"]
