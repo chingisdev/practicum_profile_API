@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 
-from tests.functional.db import filler
+from tests.functional.db import record
 from tests.functional.db.models.users import User
 from tests.functional.settings import test_settings
 
@@ -27,7 +27,7 @@ async def prepare_authenticated_user(auth_api_pg_session, redis_client, new_user
 
     new_user['password'] = pwd_context.hash(new_user['password'])
 
-    new_user_in_db = await filler.add_record(pg_session=auth_api_pg_session, model=User, filler=new_user)
+    new_user_in_db = await record.add_record(pg_session=auth_api_pg_session, model=User, filler=new_user)
 
     # 2. Аутентифицируем его ("логиним"):
     token_content = {'subject': str(new_user_in_db.id)}
