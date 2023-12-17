@@ -8,8 +8,8 @@ from passlib.context import CryptContext  # passlib рекомендована �
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
-from tests.functional import settings
 from tests.functional.models.auth.base import Base
+from tests.functional.settings import test_settings
 
 # from sqlalchemy.orm import Mapped, relationship
 
@@ -33,13 +33,13 @@ class User(Base):
         nullable=False,
     )
     email: ClassVar = Column(
-        String(settings.standard_char_field_len),
+        String(test_settings.standard_char_field_len),
         unique=True,
         nullable=False,
     )
-    password: ClassVar = Column(String(settings.long_char_field_len), nullable=False)
-    first_name: ClassVar = Column(String(settings.standard_char_field_len))
-    last_name: ClassVar = Column(String(settings.standard_char_field_len))
+    password: ClassVar = Column(String(test_settings.long_char_field_len), nullable=False)
+    first_name: ClassVar = Column(String(test_settings.standard_char_field_len))
+    last_name: ClassVar = Column(String(test_settings.standard_char_field_len))
     disabled: ClassVar = Column(Boolean, default=False)
     created_at: ClassVar = Column(DateTime, default=datetime.utcnow)
 
