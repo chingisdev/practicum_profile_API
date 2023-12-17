@@ -37,6 +37,7 @@ pytest-aiohttp = "^1.0.5"
 pytest-asyncio = "^0.23.2"
 python-jose = "^3.3.0"
 passlib = "^1.7.4"
+asyncpg = "^0.29.0"
 
 [build-system]
 requires = ["poetry-core"]
