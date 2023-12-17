@@ -17,10 +17,10 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-
+ 
   auth_api:
     container_name: auth_api
-    image: allyotov/movies_auth:1.1.0
+    image: allyotov/movies_auth:1.1.1
     env_file:
       - .ugc.env.development
     ports:
