@@ -5,8 +5,8 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
-from src.core.config import settings
-from src.models.base import Base
+from tests.functional import settings
+from tests.functional.models.movies.base import Base
 
 
 class Genre(Base):
