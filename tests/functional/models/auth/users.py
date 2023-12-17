@@ -7,7 +7,7 @@ from passlib.context import CryptContext  # passlib рекомендована �
 # в проектном задании 6-го спринта.
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, relationship
+# from sqlalchemy.orm import Mapped, relationship
 
 from tests.functional import settings
 from tests.functional.models.auth.base import Base
@@ -41,8 +41,8 @@ class User(Base):
     disabled: ClassVar = Column(Boolean, default=False)
     created_at: ClassVar = Column(DateTime, default=datetime.utcnow)
 
-    third_party_users: Mapped['ThirdPartyUser'] = relationship(back_populates='users')
-    users_histories: Mapped['UsersHistory'] = relationship(back_populates='users')
+    # third_party_users: Mapped['ThirdPartyUser'] = relationship(back_populates='users')
+    # users_histories: Mapped['UsersHistory'] = relationship(back_populates='users')
 
     def __init__(  # noqa: WPS211 у метода слишком много параметров (но здесь все они необходимы)
         self,
