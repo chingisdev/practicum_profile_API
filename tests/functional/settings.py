@@ -27,9 +27,6 @@ class TestSettings(BaseSettings):
 
     # реквизиты бд movies
 
-    movies_redis_host: str
-    movies_redis_port: int
-
     movies_postgres_db: str
     movies_postgres_user: str
     movies_postgres_password: str
