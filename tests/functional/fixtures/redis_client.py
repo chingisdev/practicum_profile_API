@@ -6,7 +6,7 @@ from tests.functional.settings import test_settings
 
 
 @pytest_asyncio.fixture(scope='function')
-async def movies_api_redis_client():
+async def auth_api_redis_client():
     """Получить экземпляр клиента redis для movies api.
 
     Yields:
@@ -14,8 +14,8 @@ async def movies_api_redis_client():
     """
     redis = await Redis.from_url(
         'redis://{host}:{port}'.format(
-            host=test_settings.movies_redis_host,
-            port=test_settings.movies_redis_port,
+            host=test_settings.redis_host,
+            port=test_settings.redis_port,
         ),
     )
 
