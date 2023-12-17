@@ -1,10 +1,15 @@
 """Утилита для добавления записей в таблицу базы данных."""
-from typing import Any
+from typing import Any, Union
 
-from src.models.base import Base
+from tests.functional.models.auth.base import Base as Auth_Base
+from tests.functional.models.movies.base import Base as Movies_Base
 
 
-async def add_record(pg_session, model, filler: dict[str, Any]) -> Base:
+async def add_record(
+    pg_session,
+    model,
+    filler: dict[str, Any],
+) -> list[Union[Movies_Base, Auth_Base]]:
     """Добавить запись в таблицу.
 
     Args:
