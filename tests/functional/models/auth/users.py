@@ -7,10 +7,12 @@ from passlib.context import CryptContext  # passlib рекомендована �
 # в проектном задании 6-го спринта.
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
-# from sqlalchemy.orm import Mapped, relationship
 
 from tests.functional import settings
 from tests.functional.models.auth.base import Base
+
+# from sqlalchemy.orm import Mapped, relationship
+
 
 pwd_context = CryptContext(
     schemes=['bcrypt'],
