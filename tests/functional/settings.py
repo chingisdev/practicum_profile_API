@@ -23,7 +23,7 @@ class TestSettings(BaseSettings):
     postgres_password: str
     postgres_host: str
     postgres_port: int
-    postgres_echo: str = 'true'
+    postgres_echo: str = 'True'
 
     # реквизиты бд movies
 
@@ -32,7 +32,7 @@ class TestSettings(BaseSettings):
     movies_postgres_password: str
     movies_postgres_host: str
     movies_postgres_port: int
-    movies_postgres_echo: str = 'true'
+    movies_postgres_echo: str = 'True'
 
     standard_char_field_len: int = 64
     long_char_field_len: int = 128
