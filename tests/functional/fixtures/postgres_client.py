@@ -66,6 +66,7 @@ async def auth_api_pg_session():
             port=test_settings.postgres_port,
             db_name=test_settings.postgres_db,
         ),
+        base_model=Auth_Base,
     )
     await postgres_client.create_database()
     async with postgres_client.async_session() as session:
