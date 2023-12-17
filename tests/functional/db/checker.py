@@ -1,10 +1,13 @@
 """Утилита для получения содержимого таблицы базы данных."""
+from typing import Union
+
 from sqlalchemy.future import select
 
-from src.models.base import Base
+from tests.functional.models.auth.base import Base as Auth_Base
+from tests.functional.models.movies.base import Base as Movies_Base
 
 
-async def get_table_content(pg_session, model) -> list[Base]:
+async def get_table_content(pg_session, model) -> list[Union[Movies_Base, Auth_Base]]:
     """Утилита для получения содержимого таблицы базы данных.
 
     Args:
