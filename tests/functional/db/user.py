@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 
-from src.models.users import User
 from tests.functional.db import filler
+from tests.functional.db.models.users import User
 from tests.functional.settings import test_settings
 
 logger = logging.getLogger(__name__)
