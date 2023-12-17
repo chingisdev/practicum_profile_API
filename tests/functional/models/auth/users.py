@@ -96,12 +96,12 @@ class UserRole(Base):
     )
     user_id = Column(
         UUID,
-        ForeignKey('users.id', ondelete='CASCADE'),
+        ForeignKey('user.id', ondelete='CASCADE'),
         nullable=False,
     )
     role_id = Column(
         UUID,
-        ForeignKey('roles.id', ondelete='CASCADE'),
+        ForeignKey('role.id', ondelete='CASCADE'),
         nullable=False,
     )
     user_role_idx = UniqueConstraint('user_id', 'role_id')
