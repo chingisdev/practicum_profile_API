@@ -20,16 +20,15 @@ event.listen(Movies_Base.metadata, 'after_drop', DropSchema('content', cascade=T
 class AsyncSimplePostgresClient:
     """Класс упрощённого асинхронного клиента базы данных Postgres."""
 
-    def __init__(self, url: str, base_model):
+    def __init__(self, url: str, base_model, echo: bool):
         """Инициализация экземпляра упрощённого для тестов клиента базы данных Postgres.
 
         Args:
             url: - url для соединения с postgres;
         """
-        pg_echo = test_settings.POSTGRES_ECHO == 'True'
         self.engine = create_async_engine(
             url,
-            echo=pg_echo,
+            echo=echo,
             future=True,
         )
 
@@ -67,6 +66,7 @@ async def auth_api_pg_session():
             db_name=test_settings.postgres_db,
         ),
         base_model=Auth_Base,
+        echo=(test_settings.postgres_echo == 'True'),
     )
     await postgres_client.create_database()
     async with postgres_client.async_session() as session:
@@ -90,6 +90,7 @@ async def movies_api_pg_session_auth():
             db_name=test_settings.movies_postgres_db,
         ),
         base_model=Movies_Base,
+        echo=(test_settings.movies_postgres_echo == 'True'),
     )
     await postgres_client.create_database()
     async with postgres_client.async_session() as session:
