@@ -5,8 +5,8 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Float, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from tests.functional import settings
 from tests.functional.models.movies.base import Base
+from tests.functional.settings import test_settings
 
 
 class Filmwork(Base):
@@ -22,17 +22,17 @@ class Filmwork(Base):
         nullable=False,
     )
     title = Column(
-        String(settings.long_char_field_len),
+        String(test_settings.long_char_field_len),
         unique=True,
         nullable=False,
     )
     description = Column(
-        String(settings.long_char_field_len),  # TODO: подобрать более подходящий тип
+        String(test_settings.long_char_field_len),  # TODO: подобрать более подходящий тип
         unique=True,
         nullable=False,
     )
     file_path = Column(
-        String(settings.long_char_field_len),
+        String(test_settings.long_char_field_len),
         unique=True,
         nullable=False,
     )
@@ -41,7 +41,7 @@ class Filmwork(Base):
         nullable=False,
     )
     type = Column(
-        String(settings.long_char_field_len),
+        String(test_settings.long_char_field_len),
         unique=True,
         nullable=False,
     )
