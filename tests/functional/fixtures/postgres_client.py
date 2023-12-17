@@ -47,19 +47,41 @@ class AsyncSimplePostgresClient:
 
 
 @pytest_asyncio.fixture(scope='function')  # Тесты не должны влиять друг на друга
-async def pg_session():
-    """Получить экземпляр ceccии клиента postgres.
+async def auth_api_pg_session():
+    """Получить экземпляр ceccии клиента postgres для бд Auth API.
 
     Yields:
         session:
     """
     postgres_client = AsyncSimplePostgresClient(
         url='postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'.format(
-            user=test_settings.POSTGRES_USER,
-            password=test_settings.POSTGRES_PASSWORD,
-            host=test_settings.POSTGRES_HOST,
-            port=test_settings.POSTGRES_PORT,
-            db_name=test_settings.POSTGRES_DB,
+            user=test_settings.postgres_user,
+            password=test_settings.postgres_password,
+            host=test_settings.postgres_host,
+            port=test_settings.postgres_port,
+            db_name=test_settings.postgres_db,
+        ),
+    )
+    await postgres_client.create_database()
+    async with postgres_client.async_session() as session:
+        yield session
+    await postgres_client.purge_database()  # Тесты не должны влиять друг на друга
+
+
+@pytest_asyncio.fixture(scope='function')  # Тесты не должны влиять друг на друга
+async def movies_api_pg_session_auth():
+    """Получить экземпляр ceccии клиента postgres для бд Movies API.
+
+    Yields:
+        session:
+    """
+    postgres_client = AsyncSimplePostgresClient(
+        url='postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'.format(
+            user=test_settings.movies_postgres_user,
+            password=test_settings.movies_postgres_password,
+            host=test_settings.movies_postgres_host,
+            port=test_settings.movies_postgres_port,
+            db_name=test_settings.movies_postgres_db,
         ),
     )
     await postgres_client.create_database()
