@@ -7,8 +7,8 @@ import pytest
 from tests.functional.db.record import add_record
 from tests.functional.db.user import prepare_authenticated_user
 from tests.functional.models.movies.filmwork import Filmwork
-from tests.functional.testdata import auth as auth_data
-from tests.functional.testdata import movies as movies_data
+from tests.functional.test_data import auth as auth_data
+from tests.functional.test_data import movies as movies_data
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
