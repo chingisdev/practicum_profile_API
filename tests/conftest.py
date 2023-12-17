@@ -1,5 +1,7 @@
 """Конфигурация pytest."""
 pytest_plugins = (
-    'tests.scheduler_api_tests.fixtures.api_client',
-    'tests.scheduler_api_tests.fixtures.event_loop',
+    'tests.functional.fixtures.api_client',
+    'tests.functional.fixtures.event_loop',
+    'tests.functional.fixtures.postgres_client',
+    'tests.functional.fixtures.redis_client',
 )
