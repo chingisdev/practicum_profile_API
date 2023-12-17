@@ -7,7 +7,7 @@ import aiohttp
 import pytest_asyncio
 from multidict import CIMultiDictProxy
 
-from tests.scheduler_api_tests.settings import test_settings
+from tests.functional.settings import test_settings
 
 logger = logging.getLogger(__name__)
 
