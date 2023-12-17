@@ -6,7 +6,7 @@ from jose import jwt
 from passlib.context import CryptContext
 
 from tests.functional.db import record
-from tests.functional.db.models.users import User
+from tests.functional.models.auth.users import User
 from tests.functional.settings import test_settings
 
 logger = logging.getLogger(__name__)
