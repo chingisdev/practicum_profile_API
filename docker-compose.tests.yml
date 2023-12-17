@@ -24,7 +24,8 @@ services:
     env_file:
       - .ugc.env.development
     ports:
-      - "8000:8000"
+      - "8000:8000"  # порт опубликован, т.к. данный файл предназначен
+    # только для тестов
     depends_on:
       - postgres
       - redis
@@ -32,6 +33,9 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres_test
+    ports:
+      - "5432:5432"  # порт опубликован, т.к. данный файл предназначен
+    # только для тестов
     env_file:
       - .ugc.env.development
     volumes:
