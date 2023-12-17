@@ -36,7 +36,7 @@ services:
 
   auth_api:
     container_name: auth_api
-    image: allyotov/movies_auth:1.1.0
+    image: allyotov/movies_auth:1.1.1
     env_file:
       - .auth.env.example
     ports:
