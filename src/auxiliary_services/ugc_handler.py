@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from src.auxiliary_services.message_broker import AsyncMessageBroker
 from src.db_models.bookmark import BookmarkModel
 from src.db_models.like import LikeDocument, LikeModel, TargetType
-from src.db_models.review import ReviewModel
+from src.db_models.review import ReviewDocument, ReviewModel
 
 
 class UgcHandler(ABC):
@@ -137,3 +137,6 @@ class ReviewUgcHandler(UgcHandler):
             'additional': additional,
         }
         await self.message_broker.send(key=self.key, message=message_to_send)
+
+    async def get_movie_reviews(self, movie_id: str) -> List[ReviewDocument]:
+        return await self.collection.get_reviews_by_movie(movie_id=movie_id)

@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from src.auxiliary_services.ugc_handler import ReviewUgcHandler
-from src.db_models.review import ReviewDocument, ReviewModel
+from src.db_models.review import ReviewDocument
 from src.dependencies.auth import get_user_from_request_state
-from src.endpoint_services.review import get_review_model, get_review_ugc_service
+from src.endpoint_services.review import get_review_ugc_service
 from src.models.review import DeleteReview, ReviewContent
 from src.models.user import User
 
@@ -72,9 +72,9 @@ async def update_review_to_movie(
 )
 async def get_reviews_for_movie(
     movie_id: str,
-    collection: ReviewModel = Depends(get_review_model),
+    review_ugc_service: ReviewUgcHandler = Depends(get_review_ugc_service),
 ) -> List[ReviewDocument]:
     try:
-        return await collection.get_reviews_by_movie(movie_id=movie_id)
+        return await review_ugc_service.get_movie_reviews(movie_id=movie_id)
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong')
