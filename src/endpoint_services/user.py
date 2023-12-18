@@ -22,13 +22,13 @@ class UserUgcHandler:
     async def update_user(self, user_id: str, update_info: UserUpdate) -> Optional[UserDocument]:
         await self.collection.update_user(user_id=user_id, update_data=update_info)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': user_id,
             'is_adding': True,
             'additional': '',
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
         return await self.collection.get_user(user_id=user_id)
 

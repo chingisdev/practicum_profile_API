@@ -31,24 +31,24 @@ class BookmarkUgcHandler(UgcHandler):
     async def add_ugc_content(self, target_id: str, user_id: str, additional: str | None = None) -> None:
         await self.collection.add_bookmark(user_id=user_id, movie_id=target_id)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': target_id,
             'is_adding': True,
         }
 
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
     async def delete_ugc_content(self, target_id: str, user_id: str, additional: str | None = None) -> None:
         await self.collection.remove_bookmark(user_id=user_id, movie_id=target_id)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': target_id,
             'is_adding': False,
         }
 
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
 
 class LikeUgcHandler(UgcHandler):
@@ -63,23 +63,23 @@ class LikeUgcHandler(UgcHandler):
         like_document = LikeDocument(target_id=target_id, user_id=user_id, target_type=self.target_type)
         await self.collection.add_like(like_document)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': target_id,
             'is_adding': True,
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
     async def delete_ugc_content(self, target_id: str, user_id: str, additional: str | None = None) -> None:
         like_document = LikeDocument(target_id=target_id, user_id=user_id, target_type=self.target_type)
         await self.collection.remove_like(like_document)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': target_id,
             'is_adding': False,
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
 
 class ReviewUgcHandler(UgcHandler):
@@ -95,24 +95,24 @@ class ReviewUgcHandler(UgcHandler):
 
         review_result = await self.collection.add_review(user_id=user_id, movie_id=target_id, review=additional)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': review_result.id,
             'is_adding': True,
             'additional': additional,
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
     async def delete_ugc_content(self, target_id: str, user_id: str, additional: str | None = None) -> None:
         await self.collection.remove_review(review_id=target_id)
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': target_id,
             'is_adding': False,
             'additional': additional,
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
 
     async def update_ugc_content(self, review_id: str, user_id: str, additional: str | None) -> None:
         if additional is None:
@@ -126,10 +126,10 @@ class ReviewUgcHandler(UgcHandler):
         if not review_update_status:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not the author of review')
 
-        message_to_kafka = {
+        message_to_send = {
             'user_id': user_id,
             'target_id': review_id,
             'is_adding': True,
             'additional': additional,
         }
-        await self.message_broker.send(key=self.key, message=message_to_kafka)
+        await self.message_broker.send(key=self.key, message=message_to_send)
