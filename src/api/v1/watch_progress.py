@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from aiokafka.errors import KafkaError
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
+from src.core.exceptions import KafkaException, OtherException
 from src.dependencies.auth import get_user_from_request_state
-from src.endpoint_services.watch_progress import WatchProgressUgcHandler, get_watch_progress_ugc_service
+from src.endpoint_services.watch_progress import get_watch_progress_ugc_service, WatchProgressUgcHandler
 from src.models.movie_progress import MovieProgress
 from src.models.user import User
 
@@ -25,5 +27,7 @@ async def handle_user_view_progress(
             status_code=status.HTTP_202_ACCEPTED,
             content={'detail': "User's watch progress has been saved"},
         )
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong')
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
