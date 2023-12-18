@@ -2,9 +2,8 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
 from src.auxiliary_services.ugc_handler import LikeUgcHandler
-from src.db_models.like import LikeModel
 from src.dependencies.auth import get_user_from_request_state
-from src.endpoint_services.like import get_like_model, get_movie_like_ugc_service, get_review_like_ugc_service
+from src.endpoint_services.like import get_movie_like_ugc_service, get_review_like_ugc_service
 from src.models.user import User
 
 router = APIRouter()
@@ -104,10 +103,10 @@ async def unlike_review(
 )
 async def get_movie_likes(
     movie_id: str,
-    collection: LikeModel = Depends(get_like_model),
+    like_ugc_handler: LikeUgcHandler = Depends(get_movie_like_ugc_service),
 ) -> JSONResponse:
     try:
-        likes = await collection.find({'target_id': movie_id})
+        likes = await like_ugc_handler.find_ugc_content(target_id=movie_id)
         return JSONResponse(status_code=status.HTTP_200_OK, content=likes)
     except Exception:
         return JSONResponse(
@@ -123,10 +122,10 @@ async def get_movie_likes(
 )
 async def get_review_likes(
     review_id: str,
-    collection: LikeModel = Depends(get_like_model),
+    like_ugc_handler: LikeUgcHandler = Depends(get_review_like_ugc_service),
 ) -> JSONResponse:
     try:
-        likes = await collection.find({'target_id': review_id})
+        likes = await like_ugc_handler.find_ugc_content(target_id=review_id)
         return JSONResponse(status_code=status.HTTP_200_OK, content=likes)
     except Exception:
         return JSONResponse(
