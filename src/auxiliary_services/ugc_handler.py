@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from fastapi import HTTPException, status
 
@@ -80,6 +81,9 @@ class LikeUgcHandler(UgcHandler):
             'is_adding': False,
         }
         await self.message_broker.send(key=self.key, message=message_to_send)
+
+    async def find_ugc_content(self, target_id: str) -> List[LikeDocument]:
+        return await self.collection.find({'target_id': target_id})
 
 
 class ReviewUgcHandler(UgcHandler):
