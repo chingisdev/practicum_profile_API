@@ -56,7 +56,7 @@ async def shutdown() -> None:
         await kafka.kafka_producer.stop()
 
 
-_T = TypeVar('_T', bound=Exception)
+_T = TypeVar('_T', bound=HTTPException)
 
 
 def exception_handler(request: Request, exc: _T):
