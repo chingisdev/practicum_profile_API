@@ -1,7 +1,9 @@
+from aiokafka.errors import KafkaError
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
 from src.auxiliary_services.ugc_handler import LikeUgcHandler
+from src.core.exceptions import KafkaException, OtherException
 from src.dependencies.auth import get_user_from_request_state
 from src.endpoint_services.like import get_movie_like_ugc_service, get_review_like_ugc_service
 from src.models.user import User
@@ -24,11 +26,10 @@ async def like_movie(
 
         return JSONResponse(status_code=status.HTTP_201_CREATED, content={'detail': 'CREATED'})
 
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.delete(
@@ -46,11 +47,10 @@ async def dislike_movie(
 
         return JSONResponse(status_code=status.HTTP_200_OK, content={'detail': 'DELETED'})
 
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.post(
@@ -68,11 +68,10 @@ async def like_review(
 
         return JSONResponse(status_code=status.HTTP_201_CREATED, content={'detail': 'CREATED'})
 
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.delete(
@@ -89,11 +88,10 @@ async def unlike_review(
 
         return JSONResponse(status_code=status.HTTP_200_OK, content={'detail': 'DELETED'})
 
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.get(
@@ -108,11 +106,10 @@ async def get_movie_likes(
     try:
         likes = await like_ugc_handler.find_ugc_content(target_id=movie_id)
         return JSONResponse(status_code=status.HTTP_200_OK, content=likes)
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.get(
@@ -127,8 +124,7 @@ async def get_review_likes(
     try:
         likes = await like_ugc_handler.find_ugc_content(target_id=review_id)
         return JSONResponse(status_code=status.HTTP_200_OK, content=likes)
-    except Exception:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={'detail': 'Internal server error'},
-        )
+    except KafkaError:
+        raise KafkaException('Kafka error')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
