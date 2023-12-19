@@ -43,7 +43,7 @@ docker compose up -d
 Для локального отладочного запуска сервиса вам понадобится пакетный менеджер и созданное виртуальное окружение.
 В текущей мажорной версии сервиса используется пакетный менеджер pip.
 В [work-in-progress-версии с тестами](https://github.com/chingisdev/practicum_profile_API/tree/a.lyotov/feat/test-profiles) используется poetry.
-## I.A. venv и pip
+### I.A. venv и pip
 создайте виртуальное окружение:
 ```bash
 python -m venv .\venv\
@@ -62,7 +62,7 @@ B. Windows:
 ```bash
 pip install -r requirements.txt
 ```
-## I.B. poetry
+### I.B. poetry
 ##### NB. В системе должен быть установлен менеджер python-пакетов poetry!
 создайте виртуальное и активируйте окружение:
 ```bash
