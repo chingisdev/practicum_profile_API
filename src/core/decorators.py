@@ -14,7 +14,7 @@ def catch_broker_exceptions(func):
     """Отлавливание исключений брокера."""
     @wraps(func)
     async def catch_broker_exceptions_wrapper(
-        *args,  # необходима nested function
+        *args,
         **kwargs,
     ) -> None:
         try:
@@ -30,18 +30,9 @@ def catch_collection_exceptions(func):
     """Отлавливание исключений получения данных."""
     @wraps(func)
     async def catch_collection_exceptions_wrapper(
-        *args,  # необходима nested function
+        *args,
         **kwargs,
     ) -> None:
-        """Вычислить время выполнения декорируемой функции.
-
-        Args:
-            args: arguments;
-            kwargs: keyword arguments;
-
-        Returns:
-            float: время выполнения задекорированной функции.
-        """
         try:
             return await func(*args, **kwargs)
         except InvalidId:
@@ -55,18 +46,9 @@ def catch_collection_broker_exceptions(func):
     """Отлавливание исключений получения данных."""
     @wraps(func)
     async def catch_collection_broker_exceptions_wrapper(
-        *args,  # необходима nested function
+        *args,
         **kwargs,
     ) -> None:
-        """Вычислить время выполнения декорируемой функции.
-
-        Args:
-            args: arguments;
-            kwargs: keyword arguments;
-
-        Returns:
-            float: время выполнения задекорированной функции.
-        """
         try:
             return await func(*args, **kwargs)
         except InvalidId:
