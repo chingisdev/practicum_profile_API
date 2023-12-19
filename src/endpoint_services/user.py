@@ -32,6 +32,9 @@ class UserUgcHandler:
 
         return await self.collection.get_user(user_id=user_id)
 
+    async def get_user(self, user_id: str) -> Optional[UserDocument]:
+        return await self.collection.get_user(user_id=user_id)
+
 
 @lru_cache()
 def get_user_model(
