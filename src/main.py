@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, TypeVar
 
 import uvicorn
 from aiokafka import AIOKafkaProducer  # type: ignore
@@ -14,6 +14,7 @@ from src.api.v1.movie import router as movie_router
 from src.api.v1.review import router as review_router
 from src.api.v1.user import router as user_router
 from src.api.v1.watch_progress import router as progress_router
+from src.core.exceptions import KafkaException, OtherException, UserDataException
 from src.core.logger import LOGGING
 from src.core.settings import settings
 from src.dependencies import auth, kafka, mongo, movie, redis
@@ -53,6 +54,32 @@ async def startup() -> None:
 async def shutdown() -> None:
     if kafka.kafka_producer:
         await kafka.kafka_producer.stop()
+
+
+_T = TypeVar('_T', bound=HTTPException)
+
+
+def exception_handler(request: Request, exc: _T):
+    logging.error(exc.detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"message": exc.detail},
+    )
+
+
+@app.exception_handler(KafkaException)
+def kafka_exception_handler(request: Request, exc: KafkaException):
+    return exception_handler(request, exc)
+
+
+@app.exception_handler(UserDataException)
+def user_data_exception_handler(request: Request, exc: UserDataException):
+    return exception_handler(request, exc)
+
+
+@app.exception_handler(OtherException)
+def other_exception_handler(request: Request, exc: OtherException):
+    return exception_handler(request, exc)
 
 
 @app.middleware('http')

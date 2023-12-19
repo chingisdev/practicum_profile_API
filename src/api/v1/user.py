@@ -1,8 +1,9 @@
 from typing import Optional
 
-from aiokafka import AIOKafkaProducer  # type: ignore
+from aiokafka import AIOKafkaProducer, KafkaError  # type: ignore
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.core.exceptions import KafkaException
 from src.core.settings import settings
 from src.db_models.user import UserDocument, UserModel
 from src.dependencies.auth import get_user_from_request_state
@@ -35,6 +36,8 @@ async def update_user_information(
         await kafka_producer.send(topic=settings.ugc_topic, key='profile', value=message_to_kafka)
 
         return await collection.get_user(user_id=user.id)
+    except KafkaError:
+        raise KafkaException('Kafka error')
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong')
 
@@ -49,5 +52,7 @@ async def get_user_information(
 ) -> Optional[UserDocument]:
     try:
         return await collection.get_user(user_id=user.id)
+    except KafkaError:
+        raise KafkaException('Kafka error')
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong')

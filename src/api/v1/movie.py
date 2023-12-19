@@ -1,8 +1,10 @@
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from bson.errors import InvalidId
+from fastapi import APIRouter, Depends, Query
 
 from src.auxiliary_services.movie_search import MovieSearch
+from src.core.exceptions import OtherException, UserDataException
 from src.dependencies.auth import get_user_from_request_state
 from src.endpoint_services.bookmark import get_bookmark_service
 from src.endpoint_services.like import get_like_service
@@ -25,8 +27,10 @@ async def get_user_bookmarked_movies(
 ) -> Optional[List[MovieSummaryResponse]]:
     try:
         return await search.get_user_movies(user_id=user.id, page_number=page_number, page_limit=page_size)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong.')
+    except InvalidId:
+        raise UserDataException('User id is not valid')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.get(
@@ -41,8 +45,10 @@ async def get_user_liked_movies(
 ) -> Optional[List[MovieSummaryResponse]]:
     try:
         return await search.get_user_movies(user_id=user.id, page_number=page_number, page_limit=page_size)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong.')
+    except InvalidId:
+        raise UserDataException('User id is not valid')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.get(
@@ -57,8 +63,10 @@ async def get_user_watched_movies(
 ) -> Optional[List[MovieSummaryResponse]]:
     try:
         return await search.get_user_movies(user_id=user.id, page_number=page_number, page_limit=page_size)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong.')
+    except InvalidId:
+        raise UserDataException('User id is not valid')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
 
 
 @router.get(
@@ -72,5 +80,7 @@ async def get_movie_info(
 ) -> MovieDetailedResponse:
     try:
         return await search.get_movie(user_id=user.id, movie_id=movie_id)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Something went wrong.')
+    except InvalidId:
+        raise UserDataException('User or movie id is not valid')
+    except Exception as e:
+        raise OtherException(f'{e.__class__.__name__} - {e.args[0]}')
