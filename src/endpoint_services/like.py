@@ -1,13 +1,17 @@
 from functools import lru_cache
 
+from aiokafka import AIOKafkaProducer  # type: ignore
 from fastapi import Depends
 from redis.asyncio import Redis
 
 from src.auxiliary_services.cache_service import CacheService
 from src.auxiliary_services.data_aggregation import BookmarkSummaryAggregator, MovieDetailedAggregator
+from src.auxiliary_services.message_broker import KafkaAsyncMessageBroker
 from src.auxiliary_services.movie_search import MovieSearch
+from src.auxiliary_services.ugc_handler import LikeUgcHandler
 from src.core.settings import settings
-from src.db_models.like import LikeModel
+from src.db_models.like import LikeModel, TargetType
+from src.dependencies.kafka import get_kafka_producer
 from src.dependencies.mongo import AsyncMongoClient, get_mongo_client
 from src.dependencies.movie import get_movie_api
 from src.dependencies.redis import get_redis
@@ -40,3 +44,21 @@ def get_like_model(
 ) -> LikeModel:
     db = client[settings.mongo_database]
     return LikeModel(db)
+
+
+@lru_cache()
+def get_movie_like_ugc_service(
+    model: LikeModel = Depends(get_like_model),
+    kafka_producer: AIOKafkaProducer = Depends(get_kafka_producer),
+) -> LikeUgcHandler:
+    message_broker = KafkaAsyncMessageBroker(producer=kafka_producer, topic=settings.ugc_topic)
+    return LikeUgcHandler(collection=model, message_broker=message_broker, target_type=TargetType.movie)
+
+
+@lru_cache()
+def get_review_like_ugc_service(
+    model: LikeModel = Depends(get_like_model),
+    kafka_producer: AIOKafkaProducer = Depends(get_kafka_producer),
+) -> LikeUgcHandler:
+    message_broker = KafkaAsyncMessageBroker(producer=kafka_producer, topic=settings.ugc_topic)
+    return LikeUgcHandler(collection=model, message_broker=message_broker, target_type=TargetType.review)

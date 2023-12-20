@@ -1,12 +1,10 @@
-from aiokafka import AIOKafkaProducer  # type: ignore
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from src.core.settings import settings
-from src.db_models.bookmark import BookmarkModel
+from src.auxiliary_services.ugc_handler import BookmarkUgcHandler
+from src.core.decorators import catch_broker_exceptions, catch_collection_broker_exceptions
 from src.dependencies.auth import get_user_from_request_state
-from src.dependencies.kafka import get_kafka_producer
-from src.endpoint_services.bookmark import get_bookmark_model
+from src.endpoint_services.bookmark import get_bookmark_ugc_service
 from src.models.user import User
 
 router = APIRouter()
@@ -16,21 +14,13 @@ router = APIRouter()
     '/{movie_id}',
     summary='Create bookmark',
 )
+@catch_broker_exceptions
 async def add_bookmark(
     movie_id: str,
     user: User = Depends(get_user_from_request_state),
-    collection: BookmarkModel = Depends(get_bookmark_model),
-    kafka_producer: AIOKafkaProducer = Depends(get_kafka_producer),
+    bookmark_ugc_handler: BookmarkUgcHandler = Depends(get_bookmark_ugc_service),
 ) -> JSONResponse:
-    await collection.add_bookmark(user_id=user.id, movie_id=movie_id)
-
-    message_to_kafka = {
-        'user_id': user.id,
-        'target_id': movie_id,
-        'is_adding': True,
-    }
-
-    await kafka_producer.send(topic=settings.ugc_topic, key='bookmark', value=message_to_kafka)
+    await bookmark_ugc_handler.add_ugc_content(target_id=movie_id, user_id=user.id)
 
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
@@ -42,21 +32,13 @@ async def add_bookmark(
     '/{movie_id}',
     summary='Delete bookmark',
 )
+@catch_collection_broker_exceptions
 async def remove_bookmark(
     movie_id: str,
     user: User = Depends(get_user_from_request_state),
-    collection: BookmarkModel = Depends(get_bookmark_model),
-    kafka_producer: AIOKafkaProducer = Depends(get_kafka_producer),
+    bookmark_ugc_handler: BookmarkUgcHandler = Depends(get_bookmark_ugc_service),
 ) -> JSONResponse:
-    await collection.remove_bookmark(user_id=user.id, movie_id=movie_id)
-
-    message_to_kafka = {
-        'user_id': user.id,
-        'target_id': movie_id,
-        'is_adding': False,
-    }
-
-    await kafka_producer.send(topic=settings.ugc_topic, key='bookmark', value=message_to_kafka)
+    await bookmark_ugc_handler.delete_ugc_content(target_id=movie_id, user_id=user.id)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
