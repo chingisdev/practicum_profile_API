@@ -1,0 +1,60 @@
+version: "3.7"
+name: sprint8
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka_ugc
+    depends_on:
+      - zookeeper
+    expose:
+      - "9092"
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT_LOCAL://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_LOCAL://127.0.0.1:9093,PLAINTEXT_DOCKER://kafka_ugc:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_LOCAL:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_MESSAGE_MAX_BYTES: 2000000  # Set max message size to 2MB
+      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka_ugc:9092
+    depends_on:
+      - kafka
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_single
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    env_file:
+      - .ugc.env.development
+
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    restart: unless-stopped
+    env_file:
+      - .ugc.env.development
+
+
+volumes:
+  mongodb_data:
