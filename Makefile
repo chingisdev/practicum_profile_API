@@ -3,10 +3,10 @@ include .ugc.env.development
 export
 
 test.services:
-	docker compose --file docker-compose.tests.yml up -d
+	docker compose --file docker-compose.from-ugc.yml up -d
 
 test.services.down:
-	docker compose --file docker-compose.tests.yml down
+	docker compose --file docker-compose.from-ugc.yml down
 
 test:
 	python -m pytest -vvv
