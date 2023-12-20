@@ -9,6 +9,9 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+    env_file:
+      - .ugc.env.development
+
 
   mongodb:
     image: mongo:latest
@@ -17,35 +20,39 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data_test:/data/db
-
-  auth_api:
-    container_name: auth_api_test
-    image: allyotov/movies_auth:1.1.1
     env_file:
       - .ugc.env.development
-    ports:
-      - "8000:8000"  # порт опубликован, т.к. данный файл предназначен
-    # только для тестов
-    depends_on:
-      - postgres
-      - redis
 
-  postgres:
-    image: postgres:latest
-    container_name: postgres_test
-    ports:
-      - "5432:5432"  # порт опубликован, т.к. данный файл предназначен
-    # только для тестов
-    env_file:
-      - .ugc.env.development
-    volumes:
-      - pg_data_test:/var/lib/postgresql/data
+  # auth_api:
+  #   container_name: auth_api_test
+  #   image: allyotov/movies_auth:1.1.1
+  #   env_file:
+  #     - .ugc.env.development
+  #   ports:
+  #     - "8000:8000"  # порт опубликован, т.к. данный файл предназначен
+  #   # только для тестов
+  #   depends_on:
+  #     - postgres
+  #     - redis
+
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: postgres_test
+  #   ports:
+  #     - "5432:5432"  # порт опубликован, т.к. данный файл предназначен
+  #   # только для тестов
+  #   env_file:
+  #     - .ugc.env.development
+  #   volumes:
+  #     - pg_data_test:/var/lib/postgresql/data
 
   # KAFKA Services
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    env_file:
+      - .ugc.env.development
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -73,7 +80,7 @@ services:
     ports:
       - "9000:9000"
     environment:
-      KAFKA_BROKERCONNECT: kafka_ugc:9092
+      KAFKA_BROKERCONNECT: kafka_profile_test:9092
     depends_on:
       - kafka
 
