@@ -13,7 +13,6 @@ def get_user_from_request_state(request: Request) -> User:
         first_name='test',
         last_name='test',
         email='test',
-        is_admin=True,
     )
     if settings.auth_enabled:
         authorized_user = request.state.user
