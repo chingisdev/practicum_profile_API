@@ -1,15 +1,15 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
 class User(BaseModel):
-    id: str
+    id: UUID
     first_name: str
     last_name: str
     email: str
     phone: str = Field(default='')
-    is_admin: bool
 
 
 class UserUpdate(BaseModel):
