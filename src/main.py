@@ -100,7 +100,7 @@ async def rate_limit_middleware(request: Request, call_next: Any) -> Any:
 
 @app.middleware('http')
 async def check_token_auth_middleware(request: Request, call_next: Any) -> Any:
-    if settings.auth_enabled and request.url.path.startswith(settings.api_path):
+    if settings.auth_enabled:
         headers = {'Authorization': request.headers.get('Authorization')}
         if auth.auth_api:
             request.state.user = await auth.auth_api.validate_user(headers=headers)
