@@ -2,81 +2,48 @@ version: "3.7"
 name: diploma
 
 services:
-  # nginx:
-  #   image: nginx:1.21.6
-  #   container_name: nginx
-  #   volumes:
-  #     - "./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
-  #     - "./nginx/conf.d:/etc/nginx/conf.d:ro"
-  #   depends_on:
-  #     - auth_api
-  #     - profile_api
-  #   ports:
-  #     - "80:80"
-  #   restart: unless-stopped
-
-  # profile_api:
-  #   container_name: profile_api
-  #   build: .
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #     - mongodb
-  #     - auth_api
-  #     - kafka
-  #   expose:
-  #     - "8000"
-  #   env_file:
-  #     - .env.example
-
   redis:
     image: redis:latest
     expose:
       - "6379"
+    ports:
+      - "6379:6379"
     restart: unless-stopped
-    env_file:
-      - .ugc.env.development
 
   mongodb:
     image: mongo:latest
     container_name: mongo_single
     ports:
-      - "27017"
+      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+ 
+  auth_api:
+    container_name: auth_api
+    image: allyotov/movies_auth:1.1.1
     env_file:
       - .ugc.env.development
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - "auth-app-logs:/backend/logs/"
 
-  # auth_api:
-  #   container_name: auth_api
-  #   image: allyotov/movies_auth:1.1.1
-  #   env_file:
-  #     - .auth.env.example
-  #   ports:
-  #     - "8000"
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   volumes:
-  #     - "auth-app-logs:/backend/logs/"
-
-  # postgres:
-  #   image: postgres:latest
-  #   container_name: postgres
-  #   env_file:
-  #     - .auth.env.example
-  #   volumes:
-  #     - pg_data:/var/lib/postgresql/data
-  #     env_file:
-  #     - .ugc.env.development
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .ugc.env.development
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
   # KAFKA Services
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-    env_file:
-      - .ugc.env.development
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -86,7 +53,7 @@ services:
     expose:
       - "9092"
     ports:
-      - "9093"
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -98,19 +65,15 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       KAFKA_MESSAGE_MAX_BYTES: 2000000  # Set max message size to 2MB
       KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
-    env_file:
-      - .ugc.env.development
 
   kafdrop:
     image: obsidiandynamics/kafdrop
     ports:
-      - "9000"
+      - "9000:9000"
     environment:
-      KAFKA_BROKERCONNECT: kafka_profile:9092
+      KAFKA_BROKERCONNECT: kafka_ugc:9092
     depends_on:
       - kafka
-    env_file:
-      - .ugc.env.development
 
   # E.L.K. services:
   # filebeat:
@@ -127,7 +90,7 @@ services:
   # logstash:
   #   image: docker.elastic.co/logstash/logstash:8.10.4
   #   ports:
-  #     - "5044"
+  #     - "5044:5044/udp"
   #   volumes:
   #     - "logstashdata:/usr/share/logstash/data"
   #     - "./elk_deploy/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
@@ -140,7 +103,7 @@ services:
   #   volumes:
   #     - "esdata:/usr/share/elasticsearch/data"
   #   ports:
-  #     - "9200"
+  #     - "9200:9200"
   #   environment:
   #     - discovery.type=single-node
   #     - xpack.security.enabled=false
@@ -150,7 +113,7 @@ services:
   #   volumes:
   #     - "kibanadata:/usr/share/kibana/data"
   #   ports:
-  #     - "5601"
+  #     - "5601:5601"
   #   environment:
   #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 

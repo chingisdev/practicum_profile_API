@@ -1,7 +1,7 @@
 """Настройки логгера для uvicorn."""
 from pathlib import Path
 
-base_dir: Path = Path(__file__).resolve().parent.parent.parent.parent
+base_dir: Path = Path(__file__).resolve().parent.parent.parent
 access_log_file_path = base_dir / 'logs' / 'access.log'
 error_log_file_path = base_dir / 'logs' / 'errors.log'
 

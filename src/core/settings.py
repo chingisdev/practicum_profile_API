@@ -2,7 +2,6 @@ import json
 import os
 from pathlib import Path
 
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 is_docker = os.environ.get('IS_DOCKER', False)
@@ -14,41 +13,40 @@ env_path = (
 )
 
 
-KAFKA_PORT_DEV = 9092
-MONGO_PORT_DEV = 27017
-AUTH_PORT_DEV = 8000
-REDIS_PORT_DEV = 6379
-
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=env_path, extra='ignore')
+    # 1.1. Profile API itself:
+    project_name: str
 
-    project_name: str = Field(default='user_profile')
+    api_path: str
 
-    api_path: str = Field(default='/api/v1')
+    token_bucket_capacity: int
+    token_bucket_rate: int
 
-    redis_host: str = Field(default='127.0.0.1')
-    redis_port: int = Field(default=REDIS_PORT_DEV)
+    # 1.2. Profile API Redis:
+    redis_host: str
+    redis_port: int
 
-    kafka_host: str = Field(default='kafka', examples=['localhost', 'kafka'])
-    kafka_port: int = Field(default=KAFKA_PORT_DEV)
-    watch_progress_topic: str = Field(default='view_progress')
-    ugc_topic: str = Field(default='ugc')
+    # 1.3. Profile API Kafka:
+    kafka_host: str
+    kafka_port: int
+    watch_progress_topic: str
+    ugc_topic: str
 
-    mongo_host: str = Field(default='127.0.0.1', examples=['localhost', 'mongodb'])
-    mongo_port: int = Field(default=MONGO_PORT_DEV)
-    mongo_database: str = Field(default='profile')
+    # 1.4. Profile API Mongo:
+    mongo_host: str
+    mongo_port: int
+    mongo_database: str
 
-    token_bucket_capacity: int = Field(default=10)
-    token_bucket_rate: int = Field(default=1)
+    # 2.1. Auth API:
+    auth_host: str
+    auth_port: int
+    auth_user_endpoint: str
+    auth_enabled: bool
+    production_mode: bool
 
-    auth_host: str = Field(default='localhost')
-    auth_port: int = Field(default=AUTH_PORT_DEV)
-    auth_user_endpoint: str = Field(default='/api/v1/users/me')
-    auth_enabled: bool = Field(default=False)
-    production_mode: bool = Field(default=False)
-
-    movie_endpoint: str = Field(default='http://localhost:8000/api/v1/films')
+    # 3.1. Movies API
+    movie_endpoint: str
 
     @property
     def auth_service_url(self) -> str:
