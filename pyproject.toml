@@ -21,6 +21,7 @@ redis = "5.0.1"
 tenacity = "8.2.3"
 aiohttp = "3.9.1"
 fastapi = "0.104.1"
+gunicorn = "^21.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
